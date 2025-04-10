@@ -21,7 +21,7 @@ pipeline {
 
         stage('Deploy to Staging') {
             steps {
-                bat 'cp -r target/ ~/staging/'
+                bat 'xcopy /E /I target\\*.* C:\\path\\to\\staging\\'
             }
         }
 
@@ -33,7 +33,7 @@ pipeline {
 
         stage('Deploy to Production') {
             steps {
-                bat 'cp -r target/ ~/production/'
+                bat 'xcopy /E /I target\\*.* C:\\path\\to\\production\\'
             }
         }
     }
