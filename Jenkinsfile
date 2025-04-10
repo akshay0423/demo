@@ -9,19 +9,19 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean compile'
+                bat 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                sh 'cp -r target/ ~/staging/'
+                bat 'cp -r target/ ~/staging/'
             }
         }
 
@@ -33,7 +33,7 @@ pipeline {
 
         stage('Deploy to Production') {
             steps {
-                sh 'cp -r target/ ~/production/'
+                bat 'cp -r target/ ~/production/'
             }
         }
     }
