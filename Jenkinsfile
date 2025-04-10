@@ -1,51 +1,49 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
-                echo 'Starting Checkout stage...'
+                echo 'Checking out the code...'
                 git url: 'https://github.com/akshay0423/demo', branch: 'main'
-                echo 'Checkout stage complete.'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Starting Build stage...'
+                echo 'Building the project...'
                 bat 'mvn clean compile'
-                echo 'Build stage complete.'
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Starting Test stage...'
+                echo 'Running unit tests...'
                 bat 'mvn test'
-                echo 'Test stage complete.'
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo 'Starting Deploy to Staging stage...'
+                echo 'Deploying to staging environment...'
                 bat 'xcopy /E /I /Y target\\*.* C:\\path\\to\\staging\\'
-                echo 'Deploy to Staging complete.'
+                echo 'Running app in staging...'
+                bat 'java -jar C:\\path\\to\\staging\\calculator-1.0-SNAPSHOT.jar'
             }
         }
 
         stage('Approval to Deploy to Production') {
             steps {
-                echo 'Waiting for approval to deploy to production...'
                 input message: 'Deploy to Production?', ok: 'Yes, Deploy'
-                echo 'Approval received. Deploying to production.'
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo 'Starting Deploy to Production stage...'
+                echo 'Deploying to production environment...'
                 bat 'xcopy /E /I /Y target\\*.* C:\\path\\to\\production\\'
-                echo 'Deploy to Production complete.'
+                echo 'Running app in production...'
+                bat 'java -jar C:\\path\\to\\production\\calculator-1.0-SNAPSHOT.jar'
             }
         }
     }
@@ -53,7 +51,7 @@ pipeline {
     post {
         failure {
             echo 'Build failed! Notifying team...'
-            // Optionally add email/slack notification here
+            // Add Slack or email notification if needed
         }
     }
 }
