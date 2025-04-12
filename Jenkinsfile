@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'windows-11-agent' }
 
     parameters {
         booleanParam(name: 'RUN_BUILD', defaultValue: true, description: 'Run the Build stage')
