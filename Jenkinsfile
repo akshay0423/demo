@@ -51,9 +51,15 @@ pipeline {
     }
 
     post {
-        failure {
-            echo 'Build failed! Notifying team...'
-            // Optionally add email/slack notification here
-        }
+    failure {
+        echo 'Build failed! Notifying team...'
+        
+        emailext(
+            subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """<p>Build <b>${env.JOB_NAME} #${env.BUILD_NUMBER}</b> has <span style='color:red;'>FAILED</span>.</p>
+                     <p>Check the console output <a href="${env.BUILD_URL}console">here</a>.</p>""",
+            to: 'akshay0423@yahoo.com'
+        )
     }
 }
+
