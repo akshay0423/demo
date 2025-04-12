@@ -4,7 +4,8 @@ pipeline {
     parameters {
         booleanParam(name: 'RUN_BUILD', defaultValue: true, description: 'Run the Build stage')
         booleanParam(name: 'RUN_TEST', defaultValue: true, description: 'Run the Test stage')
-        booleanParam(name: 'RUN_DEPLOY', defaultValue: true, description: 'Run the Deploy stages')
+        booleanParam(name: 'DEPLOY_STAGING', defaultValue: true, description: 'Run the Deploy to staging environment')
+        booleanParam(name: 'DEPLOY_PROD', defaultValue: true, description: 'Run the Deploy to production environment')
     }
 
     stages {
@@ -40,7 +41,7 @@ pipeline {
 
         stage('Deploy to Staging') {
             when {
-                expression { params.RUN_DEPLOY }
+                expression { params.DEPLOY_STAGING }
             }
             steps {
                 echo 'Starting Deploy to Staging stage...'
@@ -51,7 +52,7 @@ pipeline {
 
         stage('Approval to Deploy to Production') {
             when {
-                expression { params.RUN_DEPLOY }
+                expression { params.DEPLOY_PROD }
             }
             steps {
                 echo 'Waiting for approval to deploy to production...'
@@ -62,7 +63,7 @@ pipeline {
 
         stage('Deploy to Production') {
             when {
-                expression { params.RUN_DEPLOY }
+                expression { params.DEPLOY_PROD }
             }
             steps {
                 echo 'Starting Deploy to Production stage...'
