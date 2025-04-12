@@ -1,5 +1,12 @@
 pipeline {
     agent any
+
+    parameters {
+        booleanParam(name: 'RUN_BUILD', defaultValue: true, description: 'Run the Build stage')
+        booleanParam(name: 'RUN_TEST', defaultValue: true, description: 'Run the Test stage')
+        booleanParam(name: 'RUN_DEPLOY', defaultValue: true, description: 'Run the Deploy stages')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -10,6 +17,9 @@ pipeline {
         }
 
         stage('Build') {
+            when {
+                expression { params.RUN_BUILD }
+            }
             steps {
                 echo 'Starting Build stage...'
                 bat 'mvn clean compile'
@@ -18,6 +28,9 @@ pipeline {
         }
 
         stage('Test') {
+            when {
+                expression { params.RUN_TEST }
+            }
             steps {
                 echo 'Starting Test stage...'
                 bat 'mvn test'
@@ -26,6 +39,9 @@ pipeline {
         }
 
         stage('Deploy to Staging') {
+            when {
+                expression { params.RUN_DEPLOY }
+            }
             steps {
                 echo 'Starting Deploy to Staging stage...'
                 bat 'xcopy /E /I /Y target\\*.* C:\\path\\to\\staging\\'
@@ -34,6 +50,9 @@ pipeline {
         }
 
         stage('Approval to Deploy to Production') {
+            when {
+                expression { params.RUN_DEPLOY }
+            }
             steps {
                 echo 'Waiting for approval to deploy to production...'
                 input message: 'Deploy to Production?', ok: 'Yes, Deploy'
@@ -42,6 +61,9 @@ pipeline {
         }
 
         stage('Deploy to Production') {
+            when {
+                expression { params.RUN_DEPLOY }
+            }
             steps {
                 echo 'Starting Deploy to Production stage...'
                 bat 'xcopy /E /I /Y target\\*.* C:\\path\\to\\production\\'
@@ -51,15 +73,15 @@ pipeline {
     }
 
     post {
-    failure {
-        echo 'Build failed! Notifying team...'
-        
-        emailext(
-            subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-            body: """<p>Build <b>${env.JOB_NAME} #${env.BUILD_NUMBER}</b> has <span style='color:red;'>FAILED</span>.</p>
-                     <p>Check the console output <a href="${env.BUILD_URL}console">here</a>.</p>""",
-            to: 'akshay0423@yahoo.com'
-        )
+        failure {
+            echo 'Build failed! Notifying team...'
+
+            emailext(
+                subject: "Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """<p>Build <b>${env.JOB_NAME} #${env.BUILD_NUMBER}</b> has <span style='color:red;'>FAILED</span>.</p>
+                         <p>Check the console output <a href="${env.BUILD_URL}console">here</a>.</p>""",
+                to: 'akshay0423@yahoo.com'
+            )
+        }
     }
 }
-
